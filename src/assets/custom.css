@@ -1,0 +1,181 @@
+/* Custom styles for attendance management system */
+
+/* Colores del logo */
+:root {
+  --dark-blue: #12004d;
+  --medium-blue: #3a23c3;
+  --bright-blue: #4b2ee6;
+  --light-lilac: #a89cff;
+  --white: #ffffff;
+}
+
+/* Card hover effect for home page */
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--light-lilac);
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(58, 35, 195, 0.2) !important;
+  border-color: var(--medium-blue);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--medium-blue);
+  border-color: var(--medium-blue);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--bright-blue);
+  border-color: var(--bright-blue);
+}
+
+/* Success and Danger Buttons */
+.btn-success {
+  background-color: #2c8c6f;
+  border-color: #2c8c6f;
+}
+
+.btn-danger {
+  background-color: #d23b3b;
+  border-color: #d23b3b;
+}
+
+/* Form control focus */
+.form-control:focus, .form-select:focus {
+  border-color: var(--medium-blue);
+  box-shadow: 0 0 0 0.2rem rgba(58, 35, 195, 0.25);
+}
+
+/* Navbar enhancements */
+.navbar-dark, .navbar {
+  background: linear-gradient(90deg, var(--medium-blue) 0%, var(--dark-blue) 100%);
+}
+
+.navbar-dark .navbar-brand {
+  font-weight: 700;
+  color: var(--white);
+}
+
+.navbar-dark .nav-link {
+  color: var(--light-lilac);
+}
+
+.navbar-dark .nav-link:hover {
+  color: var(--white);
+}
+
+/* Table styles */
+.table {
+  font-size: 0.95rem;
+}
+
+.table thead th {
+  font-weight: 600;
+  background-color: var(--light-lilac);
+  color: var(--dark-blue);
+  border-bottom: 2px solid var(--medium-blue);
+  white-space: nowrap;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(58, 35, 195, 0.05);
+}
+
+/* Badge styles */
+.badge.bg-primary {
+  background-color: var(--medium-blue) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--light-lilac) !important;
+  color: var(--dark-blue);
+}
+
+/* Custom notification fade in/out */
+.notification-container .alert {
+  animation: fadeInRight 0.5s ease-out;
+  border-left: 4px solid var(--medium-blue);
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* DatePicker customization */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__header {
+  background-color: var(--light-lilac);
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--medium-blue);
+}
+
+/* Login page */
+.login-container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(58, 35, 195, 0.15);
+  border-top: 4px solid var(--medium-blue);
+  padding: 2rem;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dark-blue);
+}
+
+/* Cards and Panels */
+.card-header, .card-title {
+  color: var(--medium-blue);
+}
+
+/* Print styles for reports */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .table td, .table th {
+    padding: 0.25rem;
+    font-size: 12px;
+  }
+}
+
+/* Disabled card styles for unauthenticated users */
+.card-disabled {
+  background-color: #f8f9fa;
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.card-disabled:hover {
+  transform: none !important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  border-color: #dee2e6 !important;
+}

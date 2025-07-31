@@ -1,0 +1,70 @@
+/* Override Bootstrap styles and add custom application styles */
+
+/* General styles */
+body {
+  background-color: #f5f5fa;
+  color: #333;
+}
+
+/* Custom container padding for better spacing on larger screens */
+@media (min-width: 992px) {
+  .container {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.App-header {
+  background: linear-gradient(135deg, #12004d 0%, #3a23c3 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #a89cff;
+}
+
+.App-link:hover {
+  color: #4b2ee6;
+}
+
+/* Section containers */
+.content-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #12004d;
+  border-bottom: 2px solid #a89cff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tabs styling */
+.nav-tabs .nav-link.active {
+  color: #3a23c3;
+  font-weight: 600;
+  border-color: #a89cff #a89cff #fff;
+}
+
+.nav-tabs .nav-link:not(.active):hover {
+  border-color: #e9ecef #e9ecef #a89cff;
+}
