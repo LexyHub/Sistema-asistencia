@@ -72,7 +72,8 @@ function RegistroExtraordinario() {
       const existingRecords = await AttendanceService.getAttendanceData({
         person_id: personId,
         start_date: fecha,
-        end_date: fecha
+        end_date: fecha,
+        search: personId
       });
 
       const dayRecords = existingRecords.records || [];
@@ -152,6 +153,7 @@ function RegistroExtraordinario() {
         tipo_registro: values.tipo_registro,
         fecha_registro: values.fecha_registro,
         hora_registro: values.hora_registro,
+        search: values.person_id,
         motivo: values.motivo_solicitud, // El backend espera 'motivo', no 'motivo_solicitud'
         pin: values.pin
       };
