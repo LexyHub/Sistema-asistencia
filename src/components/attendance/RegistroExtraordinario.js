@@ -224,7 +224,7 @@ function RegistroExtraordinario() {
             fecha_registro: '',
             hora_registro: '',
             motivo_solicitud: '',
-            search: person_id,
+            search: !isAdmin && user ? user.id.toString() : '',
             pin: !isAdmin && user ? user.id.toString() : ''
           }}
           validationSchema={validationSchema}
