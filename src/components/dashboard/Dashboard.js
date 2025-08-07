@@ -144,7 +144,7 @@ function Dashboard() {
         endDate: endDate.toISOString().split('T')[0]
       };
 
-      exportToExcel(records, 'reporte_asistencia', exportOptions);
+      await exportToExcel(records, 'reporte_asistencia', exportOptions);
       success('Archivo Excel generado exitosamente');
     } catch (err) {
       error('Error al generar el archivo Excel');

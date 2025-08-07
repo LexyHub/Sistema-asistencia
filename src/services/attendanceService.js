@@ -1,3 +1,4 @@
+import { data } from 'react-router-dom';
 import api from './api';
 
 // Helper function to validate date format
@@ -242,7 +243,23 @@ const AttendanceService = {  // Fetch employee list for attendance registration 
       console.error('Error exporting attendance to CSV:', error);
       throw error;
     }
+  },
+
+  //Data procesada 
+
+processData: async (data) => {
+  const url = process.env.REACT_APP_DATA_PROCESS 
+  try {
+    const response = await api.post(url, data);
+    console.log('Data processed successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error processing attendance data:', error);
+    throw error;
   }
+}
+
 };
+
 
 export default AttendanceService;

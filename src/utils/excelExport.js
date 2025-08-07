@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { formatDate, formatTime, formatAttendanceType } from './formatters';
+import AttendanceService from '../services/attendanceService';
 
 /**
  * Export attendance data to Excel file
@@ -7,9 +8,9 @@ import { formatDate, formatTime, formatAttendanceType } from './formatters';
  * @param {string} fileName - Name of the file to download
  * @param {Object} options - Export options (startDate, endDate, etc.)
  */
-export const exportToExcel = (data, fileName = 'asistencia', options = {}) => {
+export const exportToExcel = async (data, fileName = 'asistencia', options = {}) => {
   try {
-    // Prepare data for Excel
+    // Procesar hoja principal de asistencia
     const excelData = data.map(record => ({
       'Fecha': formatDate(record.fecha_display || record.fecha) || 'N/A',
       'Nombre': record.nombre_colaborador || 'N/A',
@@ -20,11 +21,11 @@ export const exportToExcel = (data, fileName = 'asistencia', options = {}) => {
       'ID Registro': record.id_registro || 'N/A'
     }));
 
-    // Create workbook and worksheet
+    // Crear workbook
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(excelData);
 
-    // Auto-size columns
+    // Autosize columnas
     const maxWidths = {};
     excelData.forEach(row => {
       Object.keys(row).forEach(key => {
@@ -32,11 +33,9 @@ export const exportToExcel = (data, fileName = 'asistencia', options = {}) => {
         maxWidths[key] = Math.max(maxWidths[key] || 10, value.length + 2);
       });
     });
-
-    // Apply column widths
     ws['!cols'] = Object.keys(maxWidths).map(key => ({ wch: Math.min(maxWidths[key], 50) }));
 
-    // Add header styling
+    // Header styling
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let C = range.s.c; C <= range.e.c; ++C) {
       const address = XLSX.utils.encode_col(C) + '1';
@@ -48,29 +47,41 @@ export const exportToExcel = (data, fileName = 'asistencia', options = {}) => {
       };
     }
 
-    // Add metadata sheet if options provided
+    // Hoja de resumen si aplica
     if (options.startDate || options.endDate) {
       const resumenData = [{
         'Fecha de generación': new Date().toLocaleString('es-CL'),
         'Período': `${options.startDate || 'Inicio'} - ${options.endDate || 'Fin'}`,
         'Total de registros': excelData.length
       }];
-
       const metaWs = XLSX.utils.json_to_sheet(resumenData);
       XLSX.utils.book_append_sheet(wb, metaWs, 'Información');
     }
 
-    // Append main data sheet
+    // 👉 Hoja adicional "Data" desde la API
+    try {
+      console.log("inicio segunda request")
+      console.log(data)
+      const newData = {"records": data}
+      const processedData = await AttendanceService.processData(newData);
+      if (Array.isArray(processedData.detalle_diario) && processedData.detalle_diario.length > 0) {
+        const dataSheet = XLSX.utils.json_to_sheet(processedData.detalle_diario);
+        XLSX.utils.book_append_sheet(wb, dataSheet, 'Detalle Diario');
+      }
+    } catch (err) {
+      console.warn('No se pudo agregar la hoja de data procesada:', err.message);
+      // Puedes omitir o agregar una hoja vacía si quieres
+    }
+
+    // Agregar hoja principal
     XLSX.utils.book_append_sheet(wb, ws, 'Asistencia');
 
-    // Generate file name with date
     const date = new Date().toISOString().split('T')[0];
     const fullFileName = `${fileName}_${date}.xlsx`;
 
-    // Write and download file
     XLSX.writeFile(wb, fullFileName);
-
     return true;
+
   } catch (error) {
     console.error('Error exporting to Excel:', error);
     throw new Error('Error al generar el archivo Excel');
