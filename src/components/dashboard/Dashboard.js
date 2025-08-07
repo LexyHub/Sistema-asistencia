@@ -30,6 +30,8 @@ function Dashboard() {
   const [searchEmpleado, setSearchEmpleado] = useState(null);
   const [empleadosOptions, setEmpleadosOptions] = useState([]);
   const [loadingUsuarios, setLoadingUsuarios] = useState(true);
+  const [exportingExcel, setExportingExcel] = useState(false);
+  const [exportingCSV, setExportingCSV] = useState(false);
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { success, error } = useNotification();// Function to fetch attendance data with current filters - memoized to prevent dependency cycle
@@ -57,7 +59,7 @@ function Dashboard() {
         cargo,
         area,
         hash,
-        person_id: user.id 
+        person_id: user.id
       });
 
       const data = await AttendanceService.getAttendanceData(params);
@@ -132,12 +134,13 @@ function Dashboard() {
     }
   };  // Handle export to Excel
   const handleExportExcel = async () => {
+    if (exportingExcel) return; // anti doble click por si acaso
     try {
-      // Use the current records that are already loaded
       if (records.length === 0) {
         error('No hay datos para exportar');
         return;
       }
+      setExportingExcel(true);
 
       const exportOptions = {
         startDate: startDate.toISOString().split('T')[0],
@@ -149,31 +152,29 @@ function Dashboard() {
     } catch (err) {
       error('Error al generar el archivo Excel');
       console.error('Error exporting to Excel:', err);
+    } finally {
+      setExportingExcel(false);
     }
   };
 
   // Handle export to CSV
   const handleExportCSV = async () => {
+    if (exportingCSV) return;
     try {
-      // Use the current records that are already loaded
       if (records.length === 0) {
         error('No hay datos para exportar');
         return;
       }
-
-      exportToCSV(records, 'reporte_asistencia');
+      setExportingCSV(true);
+      await exportToCSV(records, 'reporte_asistencia');
       success('Archivo CSV generado exitosamente');
     } catch (err) {
       error('Error al generar el archivo CSV');
       console.error('Error exporting to CSV:', err);
+    } finally {
+      setExportingCSV(false);
     }
   };
-
-  // Navigate to correction request form
-  const handleRequestCorrection = (id) => {
-    navigate(`/solicitar-correccion/${id}`);
-  };
-
   // Render sort icon
   const renderSortIcon = (column) => {
     if (sortBy !== column) {
@@ -184,18 +185,18 @@ function Dashboard() {
       <FaSort className="ms-1 text-primary" style={{ transform: 'rotate(180deg)' }} />;
   };
   // Opciones de ejemplo (puedes obtenerlas dinámicamente si lo prefieres)
-const areaOptions = [
-  { value: '', label: 'Todos' },
-  { value: "3-79-81-82-125-83-118", label: "Operaciones" },
-  { value: "119-120-121-122-123-169-202", label: "CX" },
-  { value: "132-134-135-136", label: "TI" },
-  { value: "77-78", label: "Crecimiento" },
-  { value: "116-117-126", label: "Producto" },
-  { value: "127-128-129", label: "Personas" },
-  { value: "130-131", label: "Finanzas" },
-  { value: "348-349-238-239", label: "Consultoría" },
-  { value: "314", label: "CEO" }
-];
+  const areaOptions = [
+    { value: '', label: 'Todos' },
+    { value: "3-79-81-82-125-83-118", label: "Operaciones" },
+    { value: "119-120-121-122-123-169-202", label: "CX" },
+    { value: "132-134-135-136", label: "TI" },
+    { value: "77-78", label: "Crecimiento" },
+    { value: "116-117-126", label: "Producto" },
+    { value: "127-128-129", label: "Personas" },
+    { value: "130-131", label: "Finanzas" },
+    { value: "348-349-238-239", label: "Consultoría" },
+    { value: "314", label: "CEO" }
+  ];
 
   const cargoOptions = [
     { value: '', label: 'Todos' },
@@ -357,13 +358,42 @@ const areaOptions = [
               <FaSearch className="me-2" />
               Filtrar
             </Button>
-            <Button variant="success" onClick={handleExportExcel} className="me-2 mb-2">
-              <FaFileExcel className="me-2" />
-              Exportar Excel
+            <Button
+              variant="success"
+              onClick={handleExportExcel}
+              className="me-2 mb-2"
+              disabled={exportingExcel || loading || records.length === 0}
+            >
+              {exportingExcel ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Exportando...
+                </>
+              ) : (
+                <>
+                  <FaFileExcel className="me-2" />
+                  Exportar Excel
+                </>
+              )}
             </Button>
-            <Button variant="info" onClick={handleExportCSV} className="mb-2">
-              <FaFileCsv className="me-2" />
-              Exportar CSV
+
+            <Button
+              variant="info"
+              onClick={handleExportCSV}
+              className="mb-2"
+              disabled={exportingCSV || loading || records.length === 0}
+            >
+              {exportingCSV ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Generando CSV...
+                </>
+              ) : (
+                <>
+                  <FaFileCsv className="me-2" />
+                  Exportar CSV
+                </>
+              )}
             </Button>
           </Col>
         </Row>

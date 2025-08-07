@@ -68,7 +68,7 @@ export const exportToExcel = async (data, fileName = 'asistencia', options = {})
         const dataSheet = XLSX.utils.json_to_sheet(processedData.detalle_diario);
         const dataSheet1 = XLSX.utils.json_to_sheet(processedData.resumen_colaboradores);
         XLSX.utils.book_append_sheet(wb, dataSheet, 'Detalle Diario');
-        XLSX.utils.book_append_sheet(wb, dataSheet, 'Resumen Colaboradores');
+        XLSX.utils.book_append_sheet(wb, dataSheet1, 'Resumen Colaboradores');
       }
     } catch (err) {
       console.warn('No se pudo agregar la hoja de data procesada:', err.message);
