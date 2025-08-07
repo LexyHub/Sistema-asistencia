@@ -1,7 +1,8 @@
 import * as XLSX from 'xlsx';
 import { formatDate, formatTime, formatAttendanceType } from './formatters';
 import AttendanceService from '../services/attendanceService';
-
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 /**
  * Export attendance data to Excel file
  * @param {Array} data - Array of attendance records
@@ -95,9 +96,9 @@ export const exportToExcel = async (data, fileName = 'asistencia', options = {})
  * @param {Array} data - Array of attendance records
  * @param {string} fileName - Name of the file to download
  */
-export const exportToCSV = (data, fileName = 'asistencia') => {
+export const exportToCSV = async (data, fileName = 'asistencia') => {
   try {
-    // Prepare data for CSV
+    // 1) CSV principal (asistencia)
     const csvData = data.map(record => ({
       'Fecha': formatDate(record.fecha_display || record.fecha) || 'N/A',
       'Nombre': record.nombre_colaborador || 'N/A',
@@ -107,26 +108,42 @@ export const exportToCSV = (data, fileName = 'asistencia') => {
       'Origen': record.origen_registro || 'Normal',
       'ID Registro': record.id_registro || 'N/A'
     }));
-
-    // Create worksheet from data
     const ws = XLSX.utils.json_to_sheet(csvData);
+    const mainCsv = XLSX.utils.sheet_to_csv(ws, { FS: ';' }); // ; para Excel
 
-    // Convert to CSV
-    const csv = XLSX.utils.sheet_to_csv(ws, { FS: ';' }); // Using semicolon as separator for better Excel compatibility
+    // 2) Llamada a la API para data procesada
+    let detalleCsv = null;
+    let resumenCsv = null;
+    try {
+      const newData = { records: data };
+      const processedData = await AttendanceService.processData(newData);
 
-    // Create blob and download
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); // Add BOM for Excel UTF-8 recognition
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
+      if (Array.isArray(processedData?.detalle_diario) && processedData.detalle_diario.length > 0) {
+        const wsDetalle = XLSX.utils.json_to_sheet(processedData.detalle_diario);
+        detalleCsv = XLSX.utils.sheet_to_csv(wsDetalle, { FS: ';' });
+      }
+      if (Array.isArray(processedData?.resumen_colaboradores) && processedData.resumen_colaboradores.length > 0) {
+        const wsResumen = XLSX.utils.json_to_sheet(processedData.resumen_colaboradores);
+        resumenCsv = XLSX.utils.sheet_to_csv(wsResumen, { FS: ';' });
+      }
+    } catch (e) {
+      console.warn('No se pudo obtener data procesada para CSV:', e?.message || e);
+    }
 
+    // 3) Empaquetar todo en un ZIP
     const date = new Date().toISOString().split('T')[0];
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${fileName}_${date}.csv`);
-    link.style.visibility = 'hidden';
+    const base = `${fileName}_${date}`;
+    const zip = new JSZip();
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Agregar BOM para que Excel respete UTF-8
+    const bom = '\ufeff';
+
+    zip.file(`${base}_asistencia.csv`, bom + mainCsv);
+    if (detalleCsv) zip.file(`${base}_detalle_diario.csv`, bom + detalleCsv);
+    if (resumenCsv) zip.file(`${base}_resumen_colaboradores.csv`, bom + resumenCsv);
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    saveAs(blob, `${base}.zip`);
 
     return true;
   } catch (error) {
@@ -134,7 +151,6 @@ export const exportToCSV = (data, fileName = 'asistencia') => {
     throw new Error('Error al generar el archivo CSV');
   }
 };
-
 /**
  * Generate summary statistics from attendance data
  * @param {Array} data - Array of attendance records
