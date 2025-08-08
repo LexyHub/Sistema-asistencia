@@ -115,7 +115,7 @@ const Home = () => {
               Solicite registros de asistencia en fechas anteriores o por casos especiales.
               {!moduleAvailability.extraordinary.available && isAuthenticated() && (
                 <small className="d-block mt-2 text-danger">
-                  No disponible entre 8:00 - 9:30 AM y 18:00 - 19:30 PM
+                  No disponible entre 8:45 - 9:30 AM y 18:00 - 19:30 PM
                 </small>
               )}
             </Card.Text>

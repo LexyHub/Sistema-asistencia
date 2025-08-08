@@ -19,9 +19,9 @@ export const isRegularRegistrationTime = () => {
     return false;
   }
 
-  // Lunes a jueves (1-4): 8:00-9:30 y 18:00-19:30
+  // Lunes a jueves (1-4): 8:45-9:30 y 18:00-19:30
   if (currentDay >= 1 && currentDay <= 4) {
-    const isMorning = (currentHour === 8) || (currentHour === 9 && currentMinute <= 30);
+    const isMorning = (currentHour === 8 && currentMinute >= 45) || (currentHour === 9 && currentMinute <= 30);
     const isEvening = (currentHour === 18) || (currentHour === 19 && currentMinute <= 30);
 
       //(currentHour > 18 && currentHour < 19) || // 17:00, 18:00, 18:59
@@ -29,9 +29,9 @@ export const isRegularRegistrationTime = () => {
     return isMorning || isEvening;
   }
 
-  // Viernes (5): 8:00-9:30 y 13:00-14:30
+  // Viernes (5): 8:45-9:30 y 13:00-14:30
   if (currentDay === 5) {
-    const isMorning = (currentHour === 8) || (currentHour === 9 && currentMinute <= 30);
+    const isMorning = (currentHour === 8 && currentMinute >= 45) || (currentHour === 9 && currentMinute <= 30);
     const isMidday = (currentHour === 13) || (currentHour === 14 && currentMinute <= 30);
     return isMorning || isMidday;
   }
