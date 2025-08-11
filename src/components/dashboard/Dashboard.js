@@ -39,22 +39,26 @@ function Dashboard() {
     try {
       setLoading(true);
       setFilterError('');
+const toYMD_CL = (d) =>
+  d.toLocaleDateString('en-CA', { timeZone: 'America/Santiago' }); // YYYY-MM-DD
 
       // Validar rango de fechas
       const dateValidation = validateDateRange(
-        startDate.toISOString().split('T')[0],
-        endDate.toISOString().split('T')[0]
+         toYMD_CL(startDate),
+  toYMD_CL(endDate)
       );
  
       if (!dateValidation.valid) {
         setFilterError(dateValidation.message);
         console.error('Error de validación de fecha:', dateValidation.message);
+      
         return;
       }
- 
+      console.log('Rango de fechas:', startDate.toISOString().split('T')[0],
+        endDate.toISOString().split('T')[0])
       const params = sanitizeUrlParams({
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0],
+        start_date: toYMD_CL(startDate),
+        end_date: toYMD_CL(endDate),
         sort_by: sortBy,
         sort_order: sortOrder,
         search: searchEmpleado ? searchEmpleado.value : '', // <-- Aquí envía el person_id
@@ -329,7 +333,7 @@ function Dashboard() {
               <Form.Label>Fecha Inicio</Form.Label>
               <DatePicker
                 selected={startDate}
-                onChange={setStartDate}
+                  onChange={(d) => d && setStartDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))}
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
@@ -344,7 +348,7 @@ function Dashboard() {
               <Form.Label>Fecha Fin</Form.Label>
               <DatePicker
                 selected={endDate}
-                onChange={setEndDate}
+                  onChange={(d) => d && setEndDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))}
                 selectsEnd
                 startDate={startDate}
                 endDate={endDate}
