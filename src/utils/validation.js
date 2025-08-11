@@ -58,9 +58,9 @@ export const validateDateRange = (startDate, endDate) => {
     return { valid: false, message: 'Formato de fecha inválido' };
   }
   
-  if (start > end) {
-    return { valid: false, message: 'La fecha de inicio debe ser anterior a la fecha de fin' };
-  }
+  // if (start > end ) {
+  //   return { valid: false, message: 'La fecha de inicio debe ser anterior a la fecha de fin' };
+  // }
   
   // Verificar que no sea más de 1 año de rango
   const oneYear = 365 * 24 * 60 * 60 * 1000;

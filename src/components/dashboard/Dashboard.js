@@ -45,11 +45,13 @@ function Dashboard() {
         startDate.toISOString().split('T')[0],
         endDate.toISOString().split('T')[0]
       );
-
+ 
       if (!dateValidation.valid) {
         setFilterError(dateValidation.message);
+        console.error('Error de validación de fecha:', dateValidation.message);
         return;
       }
+ 
       const params = sanitizeUrlParams({
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0],
