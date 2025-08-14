@@ -81,7 +81,7 @@ function RegistroExtraordinario() {
       // Verificar si ya existe un registro del mismo tipo para la fecha
       const conflictingRecord = dayRecords.find(record =>
         record.tipo_registro === tipoRegistro &&
-        record.fecha === fecha
+        record.fecha === fecha && record.origen_registro !== "Rechazado por Administrador"
       );
 
       if (conflictingRecord) {
