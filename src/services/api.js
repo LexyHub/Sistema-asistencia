@@ -6,7 +6,8 @@ console.log("🔧 API_URL:", process.env.REACT_APP_API_URL);
 const api = axios.create({
   baseURL:
     process.env.REACT_APP_API_URL ||
-    "https://api.v2.lexy.cl/sistema-asistencia",
+    // "https://api.v2.lexy.cl/sistema-asistencia",
+    "https://api.v2.lexy.cl/",
   timeout: 1000000,
   headers: {
     "Content-Type": "application/json",
